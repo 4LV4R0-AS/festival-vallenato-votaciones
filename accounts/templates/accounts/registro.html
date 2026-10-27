@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block contenido %}
+<section class="tarjeta formulario">
+  <h1>Crear cuenta</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="errores">{{ form.non_field_errors }}</div>{% endif %}
+    {% for campo in form %}
+      <div class="campo {% if campo.field.widget.input_type == 'checkbox' %}campo-check{% endif %}">
+        {{ campo.label_tag }}
+        {{ campo }}
+        {% if campo.help_text %}<small class="ayuda">{{ campo.help_text|safe }}</small>{% endif %}
+        {% if campo.errors %}<div class="errores">{{ campo.errors }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="boton">Registrarme</button>
+  </form>
+  <p class="ayuda">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+</section>
+{% endblock %}

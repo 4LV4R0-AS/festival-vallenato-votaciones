@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block titulo %}Categorías {{ edicion.anio }}{% endblock %}
+{% block contenido %}
+<nav class="migas" aria-label="Ruta"><a href="{% url 'ediciones' %}">Ediciones</a> › <a href="{{ edicion.get_absolute_url }}">{{ edicion.anio }}</a> › Categorías</nav>
+<h1>Categorías de la edición {{ edicion.anio }}</h1>
+{% if pagina %}
+  <ul class="rejilla">
+    {% for categoria in pagina %}
+      <li class="tarjeta">
+        <h2><a href="{{ categoria.get_absolute_url }}">{{ categoria.nombre }}</a> {% if categoria.es_demo %}<span class="insignia insignia-demo">Demostración</span>{% endif %}</h2>
+        <p>{{ categoria.descripcion|truncatechars:140 }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+  {% include "festival/_paginacion.html" %}
+{% else %}
+  <p class="vacio">Esta edición no tiene categorías activas.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<section class="portada">
+  <p class="sobretitulo">Valledupar · Cesar · Colombia</p>
+  <h1>Votaciones del Festival de la Leyenda Vallenata 2027</h1>
+  <p>Consulta las ediciones, categorías y votaciones del Festival y conoce a sus participantes.</p>
+  <div class="acciones">
+    <a class="boton" href="{% url 'ediciones' %}">Ver ediciones</a>
+    {% if not user.is_authenticated %}<a class="boton boton-borde-claro" href="{% url 'registro' %}">Crear cuenta</a>{% endif %}
+  </div>
+</section>
+
+{% if edicion %}
+<section>
+  <h2>Edición vigente: {{ edicion.nombre }} {% if edicion.es_demo %}<span class="insignia insignia-demo">Demostración</span>{% endif %}</h2>
+  {% if categorias %}
+    <ul class="rejilla">
+      {% for categoria in categorias %}
+        <li class="tarjeta">
+          <h3><a href="{{ categoria.get_absolute_url }}">{{ categoria.nombre }}</a></h3>
+          <p>{{ categoria.descripcion|truncatechars:110 }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+    <p><a href="{% url 'categorias_edicion' edicion.anio %}">Ver todas las categorías →</a></p>
+  {% else %}
+    <p class="vacio">Esta edición aún no tiene categorías publicadas.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Votaciones abiertas</h2>
+  {% if abiertas %}
+    <ul class="rejilla">
+      {% for votacion in abiertas %}
+        <li class="tarjeta">
+          <span class="insignia insignia-abierta">Abierta</span>
+          <h3><a href="{{ votacion.get_absolute_url }}">{{ votacion.titulo }}</a></h3>
+          <p class="meta">{{ votacion.categoria.nombre }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="vacio">No hay votaciones abiertas por ahora.</p>
+  {% endif %}
+</section>
+{% else %}
+<section class="vacio">
+  <h2>Aún no hay ediciones publicadas</h2>
+  <p>El administrador debe crear y publicar una edición desde el panel de administración.</p>
+</section>
+{% endif %}
+{% endblock %}

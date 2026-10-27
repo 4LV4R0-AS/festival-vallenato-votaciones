@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}{{ votacion.titulo }}{% endblock %}
+{% block contenido %}
+<nav class="migas" aria-label="Ruta"><a href="{% url 'ediciones' %}">Ediciones</a> › <a href="{{ votacion.categoria.get_absolute_url }}">{{ votacion.categoria.nombre }}</a> › {{ votacion.titulo }}</nav>
+<h1>{{ votacion.titulo }}</h1>
+<p>
+  <span class="insignia insignia-{{ votacion.estado }}">{{ votacion.get_estado_display }}</span>
+  {% if votacion.es_demo %}<span class="insignia insignia-demo">Demostración</span>{% endif %}
+</p>
+{% if votacion.descripcion %}<p>{{ votacion.descripcion|linebreaksbr }}</p>{% endif %}
+<dl class="datos">
+  <dt>Abre</dt><dd>{% if votacion.fecha_apertura %}{{ votacion.fecha_apertura|date:"j \d\e F \d\e Y, H:i" }}{% else %}Por definir{% endif %}</dd>
+  <dt>Cierra</dt><dd>{% if votacion.fecha_cierre %}{{ votacion.fecha_cierre|date:"j \d\e F \d\e Y, H:i" }}{% else %}Por definir{% endif %}</dd>
+</dl>
+
+<h2>Opciones participantes</h2>
+{% if opciones %}
+  <ul class="rejilla">
+    {% for opcion in opciones %}
+      <li class="tarjeta">
+        {% if opcion.imagen %}<img class="opcion-img" src="{{ opcion.imagen.url }}" alt="Imagen de {{ opcion.nombre }}">{% endif %}
+        <h3>{{ opcion.nombre }}</h3>
+        <p>{{ opcion.descripcion }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="vacio">Esta votación todavía no tiene opciones participantes.</p>
+{% endif %}
+<p class="aviso">El registro de votos todavía no está disponible: se incorporará en una entrega posterior, una vez el cliente defina las reglas de elegibilidad.</p>
+{% endblock %}

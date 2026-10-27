@@ -1,0 +1,55 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Votaciones{% endblock %} · Festival de la Leyenda Vallenata 2027</title>
+  <link rel="stylesheet" href="{% static 'festival/css/estilo.css' %}">
+</head>
+<body>
+  <a class="salto" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="contenedor barra">
+      <a class="marca" href="{% url 'inicio' %}">
+        <svg class="marca-icono" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f9a825"/><path d="M13 8v12.2a3 3 0 1 0 2 2.8V12l7-1.6V8z" fill="#1b5e20"/></svg>
+        <span>Festival Vallenato <strong>2027</strong></span>
+      </a>
+      <button class="menu-boton" type="button" aria-expanded="false" aria-controls="menu-principal">Menú</button>
+      <nav id="menu-principal" class="menu" aria-label="Principal">
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <a href="{% url 'ediciones' %}">Ediciones</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'perfil' %}">Mi cuenta ({{ user.username }})</a>
+          <form class="form-linea" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="boton boton-borde">Cerrar sesión</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}">Iniciar sesión</a>
+          <a class="boton" href="{% url 'registro' %}">Registrarse</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido" class="contenedor principal">
+    {% if messages %}
+      <div class="mensajes" role="status">
+        {% for mensaje in messages %}
+          <p class="mensaje mensaje-{{ mensaje.tags }}">{{ mensaje }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p><strong>Sistema de Votaciones – Festival de la Leyenda Vallenata 2027</strong></p>
+      <p>Proyecto académico · Desarrollo Web · Fundación Universitaria del Área Andina · Entrega 2.</p>
+      <p class="pie-nota">Proyecto de estudiantes sin vinculación oficial con la Fundación Festival de la Leyenda Vallenata. Los datos mostrados son de demostración.</p>
+    </div>
+  </footer>
+  <script src="{% static 'festival/js/menu.js' %}"></script>
+</body>
+</html>

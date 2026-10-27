@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block contenido %}
+<section class="tarjeta formulario">
+  <h1>Iniciar sesión</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="errores">{{ form.non_field_errors }}</div>{% endif %}
+    {% for campo in form %}
+      <div class="campo">
+        {{ campo.label_tag }}
+        {{ campo }}
+        {% if campo.errors %}<div class="errores">{{ campo.errors }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="boton">Ingresar</button>
+  </form>
+  <p class="ayuda">¿No tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+</section>
+{% endblock %}

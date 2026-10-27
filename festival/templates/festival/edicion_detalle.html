@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}{{ edicion.nombre }}{% endblock %}
+{% block contenido %}
+<nav class="migas" aria-label="Ruta"><a href="{% url 'ediciones' %}">Ediciones</a> › {{ edicion.anio }}</nav>
+<h1>{{ edicion.nombre }} {% if edicion.es_demo %}<span class="insignia insignia-demo">Demostración</span>{% endif %}</h1>
+<p class="meta">Año {{ edicion.anio }}{% if edicion.fecha_inicio %} · del {{ edicion.fecha_inicio|date:"j \d\e F" }}{% if edicion.fecha_fin %} al {{ edicion.fecha_fin|date:"j \d\e F \d\e Y" }}{% endif %}{% endif %}</p>
+{% if edicion.descripcion %}<p>{{ edicion.descripcion|linebreaksbr }}</p>{% endif %}
+
+<h2>Categorías</h2>
+{% if categorias %}
+  <ul class="rejilla">
+    {% for categoria in categorias %}
+      <li class="tarjeta"><h3><a href="{{ categoria.get_absolute_url }}">{{ categoria.nombre }}</a></h3><p>{{ categoria.descripcion|truncatechars:110 }}</p></li>
+    {% endfor %}
+  </ul>
+  <p><a href="{% url 'categorias_edicion' edicion.anio %}">Ver la página de categorías →</a></p>
+{% else %}
+  <p class="vacio">Esta edición aún no tiene categorías activas.</p>
+{% endif %}
+{% endblock %}
