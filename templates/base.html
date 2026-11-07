@@ -19,6 +19,7 @@
         <a href="{% url 'inicio' %}">Inicio</a>
         <a href="{% url 'ediciones' %}">Ediciones</a>
         {% if user.is_authenticated %}
+          <a href="{% url 'mis_votos' %}">Mis votos</a>
           <a href="{% url 'perfil' %}">Mi cuenta ({{ user.username }})</a>
           <form class="form-linea" method="post" action="{% url 'logout' %}">
             {% csrf_token %}

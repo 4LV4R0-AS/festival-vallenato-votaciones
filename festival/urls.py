@@ -9,4 +9,7 @@ urlpatterns = [
     path("ediciones/<int:anio>/categorias/", views.categorias_edicion, name="categorias_edicion"),
     path("categorias/<int:pk>/votaciones/", views.votaciones_categoria, name="votaciones_categoria"),
     path("votaciones/<int:pk>/", views.votacion_detalle, name="votacion_detalle"),
+    path("votaciones/<int:pk>/votar/", views.votar, name="votar"),
+    path("mis-votos/", views.mis_votos, name="mis_votos"),
+    path("api/categorias/", views.api_categorias, name="api_categorias"),
 ]

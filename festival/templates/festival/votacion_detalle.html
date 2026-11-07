@@ -13,19 +13,32 @@
   <dt>Cierra</dt><dd>{% if votacion.fecha_cierre %}{{ votacion.fecha_cierre|date:"j \d\e F \d\e Y, H:i" }}{% else %}Por definir{% endif %}</dd>
 </dl>
 
+{% if voto_usuario %}
+  <p class="aviso aviso-ok">Ya votaste en esta categoría: <strong>{{ voto_usuario.opcion.nombre }}</strong> (en «{{ voto_usuario.votacion.titulo }}»). Solo se permite un voto por categoría. <a href="{% url 'mis_votos' %}">Ver mis votos</a></p>
+{% elif not habilitada %}
+  <p class="aviso">{{ motivo }}</p>
+{% elif not user.is_authenticated %}
+  <p class="aviso">Esta votación está abierta. <a href="{% url 'login' %}?next={{ request.path }}">Inicia sesión para votar</a> o <a href="{% url 'registro' %}">crea una cuenta</a>.</p>
+{% endif %}
+
 <h2>Opciones participantes</h2>
 {% if opciones %}
+  {% if puede_votar %}<form method="post" action="{% url 'votar' votacion.pk %}">{% csrf_token %}<input type="hidden" name="paso" value="seleccionar">{% endif %}
   <ul class="rejilla">
     {% for opcion in opciones %}
-      <li class="tarjeta">
+      <li class="tarjeta{% if puede_votar %} tarjeta-sel{% endif %}">
         {% if opcion.imagen %}<img class="opcion-img" src="{{ opcion.imagen.url }}" alt="Imagen de {{ opcion.nombre }}">{% endif %}
-        <h3>{{ opcion.nombre }}</h3>
+        {% if puede_votar %}
+          <label class="opcion-radio"><input type="radio" name="opcion" value="{{ opcion.pk }}" required> <span>{{ opcion.nombre }}</span></label>
+        {% else %}
+          <h3>{{ opcion.nombre }}</h3>
+        {% endif %}
         <p>{{ opcion.descripcion }}</p>
       </li>
     {% endfor %}
   </ul>
+  {% if puede_votar %}<button type="submit" class="boton">Continuar</button></form>{% endif %}
 {% else %}
   <p class="vacio">Esta votación todavía no tiene opciones participantes.</p>
 {% endif %}
-<p class="aviso">El registro de votos todavía no está disponible: se incorporará en una entrega posterior, una vez el cliente defina las reglas de elegibilidad.</p>
 {% endblock %}

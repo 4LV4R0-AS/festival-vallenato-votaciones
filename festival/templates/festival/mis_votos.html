@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Mis votos{% endblock %}
+{% block contenido %}
+<h1>Mis votos</h1>
+{% if votos %}
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead><tr><th>Edición</th><th>Categoría</th><th>Votación</th><th>Mi opción</th><th>Fecha y hora</th></tr></thead>
+      <tbody>
+        {% for voto in votos %}
+          <tr>
+            <td>{{ voto.edicion.anio }}</td>
+            <td>{{ voto.categoria.nombre }}</td>
+            <td>{{ voto.votacion.titulo }}</td>
+            <td><strong>{{ voto.opcion.nombre }}</strong></td>
+            <td>{{ voto.fecha_hora|date:"d/m/Y H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="vacio">Todavía no has votado en ninguna categoría.</p>
+{% endif %}
+
+<h2>Categorías pendientes por votar</h2>
+{% if pendientes %}
+  <ul class="rejilla">
+    {% for categoria in pendientes %}
+      <li class="tarjeta"><h3><a href="{{ categoria.get_absolute_url }}">{{ categoria.nombre }}</a></h3><p class="meta">Edición {{ categoria.edicion.anio }}</p></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="vacio">No tienes categorías pendientes con votaciones abiertas.</p>
+{% endif %}
+{% endblock %}

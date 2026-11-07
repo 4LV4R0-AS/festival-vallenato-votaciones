@@ -14,7 +14,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from festival.models import Categoria, Edicion, OpcionParticipante, Votacion
+from festival.models import Categoria, Edicion, OpcionParticipante, Votacion, Voto
 
 E = Votacion.Estado
 
@@ -24,7 +24,7 @@ CATEGORIAS = {
         [
             ("Favorito del público – Acordeón profesional", "Votación abierta de demostración.", E.ABIERTA,
              ["Acordeonero Demo 1", "Acordeonero Demo 2", "Acordeonero Demo 3"]),
-            ("Revelación juvenil – Acordeón", "Votación programada de demostración.", E.PROGRAMADA,
+            ("Revelación juvenil – Acordeón", "Votación abierta de demostración (segundo subevento de la categoría).", E.ABIERTA,
              ["Joven Talento Demo A", "Joven Talento Demo B"]),
         ],
     ),
@@ -107,6 +107,8 @@ class Command(BaseCommand):
         ))
 
     def limpiar(self):
+        # Los votos que apuntan a datos de demostración se eliminan primero (las claves foráneas son PROTECT).
+        Voto.objects.filter(opcion__es_demo=True).delete()
         o = OpcionParticipante.objects.filter(es_demo=True).delete()[0]
         v = Votacion.objects.filter(es_demo=True).delete()[0]
         c = Categoria.objects.filter(es_demo=True).delete()[0]

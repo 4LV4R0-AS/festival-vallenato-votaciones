@@ -1,7 +1,7 @@
 """Configuración de Django Admin para gestionar el Festival."""
 from django.contrib import admin, messages
 
-from .models import Categoria, Edicion, OpcionParticipante, Votacion
+from .models import Categoria, Edicion, OpcionParticipante, Votacion, Voto
 
 
 class CategoriaInline(admin.TabularInline):
@@ -62,3 +62,23 @@ class OpcionParticipanteAdmin(admin.ModelAdmin):
     list_filter = ("activa", "votacion__categoria__edicion", "es_demo")
     search_fields = ("nombre", "descripcion", "votacion__titulo")
     list_select_related = ("votacion",)
+
+
+@admin.register(Voto)
+class VotoAdmin(admin.ModelAdmin):
+    """Consulta administrativa de votos: solo lectura (no se pueden crear, editar ni borrar desde el panel)."""
+
+    list_display = ("usuario", "edicion", "categoria", "votacion", "opcion", "fecha_hora")
+    list_filter = ("edicion", "categoria", "votacion")
+    search_fields = ("usuario__username", "opcion__nombre", "votacion__titulo")
+    list_select_related = ("usuario", "edicion", "categoria", "votacion", "opcion")
+    ordering = ("-fecha_hora",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

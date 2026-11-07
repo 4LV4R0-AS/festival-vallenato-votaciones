@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Confirmar voto{% endblock %}
+{% block contenido %}
+<section class="tarjeta formulario">
+  <h1>Confirma tu voto</h1>
+  <dl class="datos">
+    <dt>Edición</dt><dd>{{ votacion.categoria.edicion.nombre }}</dd>
+    <dt>Categoría</dt><dd>{{ votacion.categoria.nombre }}</dd>
+    <dt>Votación</dt><dd>{{ votacion.titulo }}</dd>
+    <dt>Tu opción</dt><dd><strong>{{ opcion.nombre }}</strong></dd>
+  </dl>
+  <p class="aviso">Solo puedes votar una vez por categoría y no podrás cambiar tu voto después de confirmar.</p>
+  <form method="post" action="{% url 'votar' votacion.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="paso" value="confirmar">
+    <input type="hidden" name="opcion" value="{{ opcion.pk }}">
+    <div class="acciones">
+      <button type="submit" class="boton">Confirmar voto</button>
+      <a class="boton boton-borde" href="{{ votacion.get_absolute_url }}">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

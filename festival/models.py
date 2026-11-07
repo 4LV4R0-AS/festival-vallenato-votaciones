@@ -8,6 +8,7 @@ tenga hijos (evita perder información por accidente). El registro definitivo de
 votos NO se implementa en esta entrega; un futuro modelo "Voto" se relacionaría
 con User y con OpcionParticipante (ver docs/documentacion_tecnica.md).
 """
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -121,3 +122,49 @@ class OpcionParticipante(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+class Voto(models.Model):
+    """
+    Voto emitido por un usuario.
+
+    Regla central (Entrega 3): un usuario puede votar UNA sola vez por categoría y edición,
+    aunque la categoría tenga varias votaciones (subeventos). La regla se garantiza con una
+    restricción única en MySQL (usuario, edición, categoría) y se valida además en
+    festival/services.py. Edición, categoría y votación se calculan en el servidor a partir de la
+    opción elegida; nunca se aceptan desde el formulario.
+    """
+
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="votos")
+    edicion = models.ForeignKey(Edicion, on_delete=models.PROTECT, related_name="votos", verbose_name="edición")
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name="votos", verbose_name="categoría")
+    votacion = models.ForeignKey(Votacion, on_delete=models.PROTECT, related_name="votos", verbose_name="votación")
+    opcion = models.ForeignKey(OpcionParticipante, on_delete=models.PROTECT, related_name="votos", verbose_name="opción")
+    fecha_hora = models.DateTimeField("fecha y hora", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "voto"
+        verbose_name_plural = "votos"
+        ordering = ["-fecha_hora"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["usuario", "edicion", "categoria"],
+                name="un_voto_por_usuario_categoria_edicion",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.usuario} → {self.opcion} ({self.categoria})"
+
+    def clean(self):
+        """Comprueba que usuario, opción, votación, categoría y edición sean coherentes entre sí."""
+        if self.opcion_id and self.votacion_id and self.opcion.votacion_id != self.votacion_id:
+            raise ValidationError("La opción no pertenece a la votación indicada.")
+        if self.votacion_id and self.categoria_id and self.votacion.categoria_id != self.categoria_id:
+            raise ValidationError("La votación no pertenece a la categoría indicada.")
+        if self.categoria_id and self.edicion_id and self.categoria.edicion_id != self.edicion_id:
+            raise ValidationError("La categoría no pertenece a la edición indicada.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)

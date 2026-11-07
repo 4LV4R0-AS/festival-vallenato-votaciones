@@ -177,11 +177,11 @@ class VistasPublicasTests(TestCase):
         r = self.client.get(reverse("votacion_detalle", args=[votacion.pk]))
         self.assertContains(r, "todavía no tiene opciones participantes")
 
-    def test_T22_no_hay_boton_de_votar_falso(self):
+    def test_T22_visitante_ve_invitacion_a_iniciar_sesion_y_no_el_formulario(self):
         _, _, votacion = crear_cadena()
         r = self.client.get(reverse("votacion_detalle", args=[votacion.pk]))
-        self.assertNotContains(r, "Votar ahora")
-        self.assertContains(r, "todavía no está disponible")
+        self.assertContains(r, "Inicia sesión para votar")
+        self.assertNotContains(r, 'name="opcion"')
 
 
 class DatosDemoTests(TestCase):

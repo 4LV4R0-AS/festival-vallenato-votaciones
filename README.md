@@ -14,7 +14,7 @@ Aplicación web en **Python + Django (patrón MVT)** con base de datos **MySQL**
 - Interfaz responsive con CSS propio (sin CDN ni servicios externos).
 - 44 pruebas automatizadas (`TestCase`).
 
-**Fuera de alcance (entregas futuras):** registro de votos, reglas de elegibilidad, prevención de votos duplicados, auditoría, resultados y recuperación de contraseña. El diseño ya queda preparado (ver `docs/documentacion_tecnica.md`, sección 6).
+**Fuera de alcance:** resultados públicos, recuperación de contraseña y despliegue.
 
 ## 2. Tecnologías
 
@@ -195,3 +195,35 @@ git branch -M main
 git remote add origin https://github.com/TU_USUARIO/TU_REPOSITORIO.git
 git push -u origin main
 ```
+
+## 14. Módulo de votación y API (Entrega 3)
+
+**Regla central:** cada usuario puede votar **una sola vez por categoría y edición**; puede votar en otras categorías, pero no emitir un segundo voto en la misma categoría, aunque tenga varias votaciones (subeventos).
+
+| Ruta | Descripción | Acceso |
+|---|---|---|
+| `/votaciones/<id>/` | Detalle y formulario para elegir una opción | Público (votar exige sesión) |
+| `/votaciones/<id>/votar/` | Confirmar y registrar el voto (solo POST con CSRF) | Requiere sesión |
+| `/mis-votos/` | Categorías votadas y pendientes del usuario | Requiere sesión |
+| `/api/categorias/` | API GET: categorías, votaciones y opciones en JSON (`?edicion=2027` opcional) | Público |
+| `/admin/festival/voto/` | Consulta administrativa de votos (solo lectura) | Staff |
+
+**Dónde está cada cosa**
+
+- Modelo `Voto` y restricción única `un_voto_por_usuario_categoria_edicion`: `festival/models.py`.
+- Validaciones (autenticación, votación abierta, fechas, opción válida, duplicado, concurrencia): `festival/services.py` (`registrar_voto`).
+- Vistas y API: `festival/views.py` (`votar`, `mis_votos`, `api_categorias`). Rutas: `festival/urls.py`.
+- Pruebas CP-01 a CP-10: `festival/test_votos.py`.
+
+**Cómo probarlo**
+
+```powershell
+python manage.py migrate            # crea la tabla festival_voto
+python manage.py cargar_demo        # datos de demostración (la categoría "Acordeón profesional" tiene dos votaciones abiertas)
+python manage.py runserver
+python manage.py probar_concurrencia            # 8 votos simultáneos: queda 1 solo voto
+python manage.py probar_concurrencia --limpiar  # borra el usuario y los votos de esa prueba
+python manage.py test               # todas las pruebas
+```
+
+API: abre `http://127.0.0.1:8000/api/categorias/` en el navegador.

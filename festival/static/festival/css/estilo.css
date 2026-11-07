@@ -103,3 +103,13 @@ img { max-width: 100%; height: auto; }
 .pie { background: var(--verde-oscuro); color: #dfe7e0; padding-block: 1.5rem; border-top: 4px solid var(--dorado); font-size: .92rem; }
 .pie p { margin: .2rem 0; }
 .pie-nota { color: #b8c7bb; font-size: .85rem; }
+
+/* Votación (Entrega 3) */
+.opcion-radio { display: flex; gap: .55rem; align-items: flex-start; font-weight: 700; font-size: 1.1rem; cursor: pointer; color: var(--verde-oscuro); }
+.opcion-radio input { width: 1.15rem; height: 1.15rem; margin-top: .3rem; accent-color: var(--verde); }
+.tarjeta-sel:has(input:checked) { border-left-color: var(--dorado); background: #fffbe8; }
+.aviso-ok { background: #e8f5e9; border-left-color: var(--verde); }
+.tabla-scroll { overflow-x: auto; margin: 1rem 0; }
+.tabla { width: 100%; border-collapse: collapse; background: #fff; }
+.tabla th, .tabla td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--borde); }
+.tabla th { background: var(--verde); color: #fff; }
